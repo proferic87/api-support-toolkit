@@ -1,0 +1,174 @@
+{
+  "info": {
+    "_postman_id": "98d09464-d0c7-42ff-a5b7-b0fd03c2ec23",
+    "name": "Day 6",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54316228",
+    "_collection_link": "https://go.postman.co/collection/54316228-98d09464-d0c7-42ff-a5b7-b0fd03c2ec23?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Tigger 400 and dissect it",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "console.log(\"\\n========== DIAGNOSTIC REPORT ==========\");\r",
+              "\r",
+              "const code = pm.response.code;\r",
+              "const statusText = pm.response.status;\r",
+              "let category;\r",
+              "if (code >= 200 && code < 300) category = \"✅ SUCCESS\";\r",
+              "else if (code >= 300 && code < 400) category = \"↪️  REDIRECT\";\r",
+              "else if (code >= 400 && code < 500) category = \"⚠️  CLIENT ERROR\";\r",
+              "else if (code >= 500) category = \"🔥 SERVER ERROR\";\r",
+              "else category = \"❓ UNKNOWN\";\r",
+              "\r",
+              "console.log(`\\n[1] STATUS: ${code} ${statusText} — ${category}`);\r",
+              "\r",
+              "console.log(`\\n[2] HEADERS:`);\r",
+              "console.log(`    Content-Type:   ${pm.response.headers.get(\"Content-Type\") || \"none\"}`);\r",
+              "console.log(`    Request-ID:     ${pm.response.headers.get(\"X-Request-ID\") || pm.response.headers.get(\"X-Request-Id\") || \"none\"}`);\r",
+              "console.log(`    Retry-After:    ${pm.response.headers.get(\"Retry-After\") || \"none\"}`);\r",
+              "console.log(`    WWW-Auth:       ${pm.response.headers.get(\"WWW-Authenticate\") || \"none\"}`);\r",
+              "\r",
+              "console.log(`\\n[3] BODY:`);\r",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";\r",
+              "if (contentType.includes(\"json\")) {\r",
+              "    try {\r",
+              "        const body = pm.response.json();\r",
+              "        console.log(`    Format:         JSON`);\r",
+              "        console.log(`    Top-level keys: ${Object.keys(body).join(\", \") || \"(empty)\"}`);\r",
+              "        console.log(`    Body:`, body);\r",
+              "    } catch (e) {\r",
+              "        console.log(`    ⚠️  Claims JSON but failed to parse`);\r",
+              "    }\r",
+              "} else {\r",
+              "    console.log(`    Format:         ${contentType || \"unknown\"}`);\r",
+              "    console.log(`    Snippet:        ${pm.response.text().substring(0, 200)}`);\r",
+              "}\r",
+              "\r",
+              "const ms = pm.response.responseTime;\r",
+              "let timingNote;\r",
+              "if (ms < 200) timingNote = \"fast\";\r",
+              "else if (ms < 1000) timingNote = \"normal\";\r",
+              "else if (ms < 5000) timingNote = \"slow\";\r",
+              "else timingNote = \"🐌 very slow\";\r",
+              "\r",
+              "console.log(`\\n[4] TIMING: ${ms}ms (${timingNote})`);\r",
+              "console.log(`    Size:    ${pm.response.responseSize} bytes`);\r",
+              "\r",
+              "console.log(\"\\n=======================================\\n\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstname\": \"Eric\",\r\n  \"lastname\": \"Test\",\r\n  \"totalprice\": 100,\r\n  \"depositpaid\": true,\r\n  \"bookingdates\": {\r\n    \"checkin\": \"2026-05-15\",\r\n    \"checkout\": \"2026-05-20\"\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://restful-booker.herokuapp.com/booking",
+          "protocol": "https",
+          "host": [
+            "restful-booker",
+            "herokuapp",
+            "com"
+          ],
+          "path": [
+            "booking"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Trigger a 401",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "token=definitelyNotARealToken123",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://restful-booker.herokuapp.com/booking/1",
+          "protocol": "https",
+          "host": [
+            "restful-booker",
+            "herokuapp",
+            "com"
+          ],
+          "path": [
+            "booking",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Trigger a 403(with a bad token)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "token=definitelyNotARealToken123",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://restful-booker.herokuapp.com/booking/1",
+          "protocol": "https",
+          "host": [
+            "restful-booker",
+            "herokuapp",
+            "com"
+          ],
+          "path": [
+            "booking",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Real 401 on a different API",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "The 401(No Auth on Github)",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
